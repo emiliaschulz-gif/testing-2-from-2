@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Daily Life, Wardrobe & Skin Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        alabaster: '#FAF9F6',
+                        charcoal: '#2A2827',
+                        sage: '#8A9A86',
+                        'sage-light': '#E2E8E1',
+                        sand: '#EAE5D9',
+                        warmgray: '#8C857B',
+                        blush: '#E8D3C8',
+                        'blush-dark': '#C89B8C'
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF9F6;
+            color: #2A2827;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #FAF9F6; }
+        ::-webkit-scrollbar-thumb { background: #D1CDC4; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8A9A86; }
+
+        /* Scanning Laser Beam Animation */
+        @keyframes scanBeam {
+            0% { top: 0%; opacity: 0.8; }
+            50% { top: 95%; opacity: 0.8; }
+            100% { top: 0%; opacity: 0.8; }
+        }
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8A9A86, #E8D3C8, #8A9A86, transparent);
+            box-shadow: 0 0 12px #8A9A86, 0 0 20px #E8D3C8;
+            animation: scanBeam 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 bg-alabaster/90 backdrop-blur-md border-b border-sand">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-full bg-sage text-white flex items-center justify-center font-serif text-lg italic">A</span>
+                <h1 class="text-2xl font-serif font-semibold tracking-wide">AURA</h1>
+                <span class="text-xs text-warmgray uppercase tracking-widest pl-2 border-l border-sand">Studio & Wellness</span>
+            </div>
+            
+            <nav class="flex flex-wrap justify-center items-center gap-1 bg-sand/40 p-1 rounded-full text-xs md:text-sm font-medium">
+                <button onclick="switchTab('todo')" id="nav-todo" class="nav-btn px-4 py-1.5 rounded-full bg-charcoal text-white transition-all">To-Do</button>
+                <button onclick="switchTab('closet')" id="nav-closet" class="nav-btn px-4 py-1.5 rounded-full text-charcoal hover:bg-white/60 transition-all">Digital Closet</button>
+                <button onclick="switchTab('builder')" id="nav-builder" class="nav-btn px-4 py-1.5 rounded-full text-charcoal hover:bg-white/60 transition-all">Outfit Studio</button>
+                <button onclick="switchTab('skincare')" id="nav-skincare" class="nav-btn px-4 py-1.5 rounded-full text-charcoal hover:bg-white/60 transition-all">Skin & Makeup</button>
+                <button onclick="switchTab('tips')" id="nav-tips" class="nav-btn px-4 py-1.5 rounded-full text-charcoal hover:bg-white/60 transition-all">Life Playbook</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+
+        <!-- SECTION 1: TO-DO LIST -->
+        <section id="section-todo" class="tab-section space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-sand">
+                <div>
+                    <span class="text-xs font-semibold text-sage uppercase tracking-wider">Daily Intentions</span>
+                    <h2 class="text-3xl font-serif font-bold text-charcoal">Organized Checklist</h2>
+                </div>
+                <!-- Progress Bar -->
+                <div class="bg-white border border-sand p-4 rounded-xl w-full md:w-72 shadow-sm">
+                    <div class="flex justify-between text-xs mb-1 font-medium">
+                        <span class="text-warmgray">Today's Progress</span>
+                        <span id="progress-percent" class="text-sage font-bold">0%</span>
+                    </div>
+                    <div class="w-full bg-sand/50 h-2 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-sage h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Input Form -->
+            <form id="todo-form" onsubmit="addTask(event)" class="bg-white p-4 rounded-2xl border border-sand shadow-sm flex flex-col md:flex-row gap-3">
+                <input type="text" id="task-input" placeholder="What would you like to accomplish today?" required class="flex-1 bg-alabaster border border-sand/80 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-sage transition-all">
+                <select id="task-category" class="bg-alabaster border border-sand/80 px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal focus:outline-none focus:border-sage">
+                    <option value="Routine">Routine</option>
+                    <option value="Style">Style</option>
+                    <option value="Skincare">Skincare</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                </select>
+                <button type="submit" class="bg-charcoal text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-sage transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i> Add Task
+                </button>
+            </form>
+
+            <!-- Filter Buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 text-xs">
+                <span class="text-warmgray font-medium mr-1">Filter:</span>
+                <button onclick="filterTasks('all')" class="task-filter-btn px-3 py-1 rounded-full bg-charcoal text-white" data-category="all">All</button>
+                <button onclick="filterTasks('Routine')" class="task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand" data-category="Routine">Routine</button>
+                <button onclick="filterTasks('Style')" class="task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand" data-category="Style">Style</button>
+                <button onclick="filterTasks('Skincare')" class="task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand" data-category="Skincare">Skincare</button>
+                <button onclick="filterTasks('Work')" class="task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand" data-category="Work">Work</button>
+                <button onclick="filterTasks('Personal')" class="task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand" data-category="Personal">Personal</button>
+            </div>
+
+            <!-- Task List Grid -->
+            <div id="todo-list" class="space-y-3"></div>
+        </section>
+
+        <!-- SECTION 2: DIGITAL CLOSET PHOTO UPLOADER -->
+        <section id="section-closet" class="tab-section hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-sand">
+                <div>
+                    <span class="text-xs font-semibold text-sage uppercase tracking-wider">My Clothes</span>
+                    <h2 class="text-3xl font-serif font-bold text-charcoal">Digital Wardrobe</h2>
+                </div>
+                <p class="text-sm text-warmgray max-w-md">Snap pictures of your clothes or upload images to build your personalized digital wardrobe catalog.</p>
+            </div>
+
+            <!-- Upload Box -->
+            <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-4">
+                <h3 class="text-lg font-serif font-semibold text-charcoal">Add New Clothing Piece</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="clothing-title" placeholder="Item Name (e.g. Linen White Shirt)" class="bg-alabaster border border-sand/80 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-sage">
+                    
+                    <select id="clothing-category" class="bg-alabaster border border-sand/80 px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal focus:outline-none focus:border-sage">
+                        <option value="tops">Top / Shirt</option>
+                        <option value="bottoms">Bottom / Pants / Skirt</option>
+                        <option value="shoes">Shoes</option>
+                        <option value="accessories">Accessory / Bag</option>
+                    </select>
+
+                    <label class="cursor-pointer bg-sand/40 hover:bg-sand text-charcoal px-4 py-2.5 rounded-xl text-sm font-medium border border-sand flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-solid fa-camera"></i>
+                        <span id="file-label">Take or Choose Photo</span>
+                        <input type="file" id="clothing-photo" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelect(event)">
+                    </label>
+                </div>
+
+                <!-- Selected Image Preview -->
+                <div id="photo-preview-container" class="hidden flex items-center gap-4 bg-alabaster p-3 rounded-xl border border-sand">
+                    <img id="photo-preview" src="" class="w-16 h-16 object-cover rounded-lg border border-sand">
+                    <span class="text-xs text-warmgray flex-1">Photo compressed & ready to add.</span>
+                    <button onclick="addClothingItem()" class="bg-sage text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-charcoal transition-all">
+                        Save to Wardrobe
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wardrobe Filters & Display Grid -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 border-b border-sand/60 pb-2 overflow-x-auto text-xs">
+                    <button onclick="filterCloset('all')" class="closet-filter-btn px-4 py-1.5 rounded-full bg-charcoal text-white" data-cat="all">All Items</button>
+                    <button onclick="filterCloset('tops')" class="closet-filter-btn px-4 py-1.5 rounded-full bg-sand/40 text-charcoal hover:bg-sand" data-cat="tops">Tops</button>
+                    <button onclick="filterCloset('bottoms')" class="closet-filter-btn px-4 py-1.5 rounded-full bg-sand/40 text-charcoal hover:bg-sand" data-cat="bottoms">Bottoms</button>
+                    <button onclick="filterCloset('shoes')" class="closet-filter-btn px-4 py-1.5 rounded-full bg-sand/40 text-charcoal hover:bg-sand" data-cat="shoes">Shoes</button>
+                    <button onclick="filterCloset('accessories')" class="closet-filter-btn px-4 py-1.5 rounded-full bg-sand/40 text-charcoal hover:bg-sand" data-cat="accessories">Accessories</button>
+                </div>
+
+                <div id="closet-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: OUTFIT STUDIO / MIX & MATCH BUILDER -->
+        <section id="section-builder" class="tab-section hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-sand">
+                <div>
+                    <span class="text-xs font-semibold text-sage uppercase tracking-wider">Style Lab</span>
+                    <h2 class="text-3xl font-serif font-bold text-charcoal">Outfit Builder</h2>
+                </div>
+                <button onclick="randomizeOutfit()" class="bg-sage text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-charcoal transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-shuffle"></i> Surprise Me (Shuffle)
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Carousel Selectors -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- Top Slot -->
+                    <div class="bg-white p-4 rounded-2xl border border-sand flex items-center justify-between gap-4 shadow-sm">
+                        <button onclick="cycleItem('tops', -1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <div class="flex items-center gap-4 flex-1">
+                            <img id="builder-img-tops" src="" class="w-16 h-16 object-cover rounded-xl border border-sand bg-alabaster">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-sage tracking-wider">Top</span>
+                                <h4 id="builder-name-tops" class="text-sm font-semibold text-charcoal">Select Item</h4>
+                            </div>
+                        </div>
+                        <button onclick="cycleItem('tops', 1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
+
+                    <!-- Bottom Slot -->
+                    <div class="bg-white p-4 rounded-2xl border border-sand flex items-center justify-between gap-4 shadow-sm">
+                        <button onclick="cycleItem('bottoms', -1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <div class="flex items-center gap-4 flex-1">
+                            <img id="builder-img-bottoms" src="" class="w-16 h-16 object-cover rounded-xl border border-sand bg-alabaster">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-sage tracking-wider">Bottom</span>
+                                <h4 id="builder-name-bottoms" class="text-sm font-semibold text-charcoal">Select Item</h4>
+                            </div>
+                        </div>
+                        <button onclick="cycleItem('bottoms', 1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
+
+                    <!-- Shoes Slot -->
+                    <div class="bg-white p-4 rounded-2xl border border-sand flex items-center justify-between gap-4 shadow-sm">
+                        <button onclick="cycleItem('shoes', -1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <div class="flex items-center gap-4 flex-1">
+                            <img id="builder-img-shoes" src="" class="w-16 h-16 object-cover rounded-xl border border-sand bg-alabaster">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-sage tracking-wider">Shoes</span>
+                                <h4 id="builder-name-shoes" class="text-sm font-semibold text-charcoal">Select Item</h4>
+                            </div>
+                        </div>
+                        <button onclick="cycleItem('shoes', 1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
+
+                    <!-- Accessory Slot -->
+                    <div class="bg-white p-4 rounded-2xl border border-sand flex items-center justify-between gap-4 shadow-sm">
+                        <button onclick="cycleItem('accessories', -1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <div class="flex items-center gap-4 flex-1">
+                            <img id="builder-img-accessories" src="" class="w-16 h-16 object-cover rounded-xl border border-sand bg-alabaster">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-sage tracking-wider">Accessory</span>
+                                <h4 id="builder-name-accessories" class="text-sm font-semibold text-charcoal">Select Item</h4>
+                            </div>
+                        </div>
+                        <button onclick="cycleItem('accessories', 1)" class="w-9 h-9 rounded-full bg-alabaster hover:bg-sand border border-sand flex items-center justify-center text-charcoal"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
+                </div>
+
+                <!-- Outfit Preview Canvas -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sand flex flex-col justify-between shadow-sm space-y-4">
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-charcoal border-b border-sand pb-2 mb-4">Outfit Canvas</h3>
+                        <div class="grid grid-cols-2 gap-3 bg-alabaster p-4 rounded-xl border border-sand/60 min-h-[260px]">
+                            <div class="flex flex-col items-center justify-center border border-dashed border-sand rounded-lg p-2 bg-white">
+                                <img id="canvas-top" class="w-20 h-20 object-cover rounded-md hidden">
+                                <span id="canvas-top-lbl" class="text-[10px] text-warmgray">Top</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center border border-dashed border-sand rounded-lg p-2 bg-white">
+                                <img id="canvas-bottom" class="w-20 h-20 object-cover rounded-md hidden">
+                                <span id="canvas-bottom-lbl" class="text-[10px] text-warmgray">Bottom</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center border border-dashed border-sand rounded-lg p-2 bg-white">
+                                <img id="canvas-shoes" class="w-20 h-20 object-cover rounded-md hidden">
+                                <span id="canvas-shoes-lbl" class="text-[10px] text-warmgray">Shoes</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center border border-dashed border-sand rounded-lg p-2 bg-white">
+                                <img id="canvas-acc" class="w-20 h-20 object-cover rounded-md hidden">
+                                <span id="canvas-acc-lbl" class="text-[10px] text-warmgray">Accessory</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <input type="text" id="outfit-title" placeholder="Outfit Title (e.g., Casual Coffee Date)" class="w-full bg-alabaster border border-sand/80 px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sage">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="outfit-occasion" placeholder="Occasion" class="bg-alabaster border border-sand/80 px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sage">
+                            <input type="text" id="outfit-weather" placeholder="Weather (e.g. Mild, 22°C)" class="bg-alabaster border border-sand/80 px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sage">
+                        </div>
+                        <button onclick="saveOutfit()" class="w-full bg-charcoal text-white py-2.5 rounded-xl text-xs font-semibold hover:bg-sage transition-all">
+                            Save Look to Journal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Outfits Grid -->
+            <div class="pt-6 border-t border-sand space-y-4">
+                <h3 class="text-xl font-serif font-bold text-charcoal">Saved Looks</h3>
+                <div id="saved-outfits-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: SKINCARE & MAKEUP SCANNER ORGANIZER (NEW!) -->
+        <section id="section-skincare" class="tab-section hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-sand">
+                <div>
+                    <span class="text-xs font-semibold text-sage uppercase tracking-wider">Beauty & Glow Studio</span>
+                    <h2 class="text-3xl font-serif font-bold text-charcoal">Face Scan & Makeup Matcher</h2>
+                </div>
+                <p class="text-sm text-warmgray max-w-md">Scan your face with your camera to analyze skin metrics, receive customized product recommendations, and organize your daily vanity shelf.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Camera / Scanner Container (5 Cols) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-4 text-center">
+                    <h3 class="text-lg font-serif font-semibold text-charcoal text-left">AI Face Scanner</h3>
+                    
+                    <div class="relative w-full aspect-square max-w-sm mx-auto bg-charcoal rounded-2xl overflow-hidden flex items-center justify-center border-2 border-sand shadow-inner">
+                        <!-- Live Video Stream -->
+                        <video id="webcam-stream" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                        
+                        <!-- Uploaded or Captured Image Preview -->
+                        <img id="scanned-image-preview" src="" class="w-full h-full object-cover hidden">
+
+                        <!-- Scanning Line Animation Overlay -->
+                        <div id="scan-laser" class="hidden scan-line z-10"></div>
+
+                        <!-- Face Outline Guide -->
+                        <div id="face-guide" class="absolute z-10 border-2 border-dashed border-white/60 rounded-full w-48 h-64 pointer-events-none flex items-center justify-center">
+                            <span class="text-[11px] text-white/70 bg-black/40 px-2 py-1 rounded-full backdrop-blur-sm">Align Face Here</span>
+                        </div>
+
+                        <!-- Placeholder Message -->
+                        <div id="scanner-placeholder" class="text-warmgray p-6 space-y-2">
+                            <i class="fa-solid fa-camera-retro text-4xl text-sand mb-2"></i>
+                            <p class="text-xs">Start your camera or upload a clear photo of your face to analyze skin tone and texture.</p>
+                        </div>
+                    </div>
+
+                    <canvas id="scan-canvas" class="hidden"></canvas>
+
+                    <!-- Control Buttons -->
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <button id="btn-start-camera" onclick="startCamera()" class="bg-charcoal text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-sage transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-video"></i> Open Camera
+                        </button>
+                        <label class="cursor-pointer bg-sand/40 hover:bg-sand text-charcoal px-4 py-2 rounded-xl text-xs font-semibold border border-sand flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-upload"></i> Upload Photo
+                            <input type="file" accept="image/*" class="hidden" onchange="handleFacePhotoUpload(event)">
+                        </label>
+                        <button id="btn-analyze" onclick="performFaceScan()" disabled class="bg-sage text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-charcoal transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Face & Match
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analysis Results & Recommended Routine (7 Cols) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div id="analysis-results-box" class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-6">
+                        <div class="flex items-center justify-between border-b border-sand pb-3">
+                            <h3 class="font-serif font-bold text-xl text-charcoal">Skin & Makeup Profile</h3>
+                            <span id="scan-status-tag" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 bg-sand/40 rounded-full text-warmgray">Awaiting Scan</span>
+                        </div>
+
+                        <!-- Skin Metrics Cards -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                            <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                <span class="text-[10px] font-bold text-warmgray uppercase">Skin Tone</span>
+                                <p id="res-skintone" class="text-sm font-semibold text-charcoal mt-1">—</p>
+                            </div>
+                            <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                <span class="text-[10px] font-bold text-warmgray uppercase">Undertone</span>
+                                <p id="res-undertone" class="text-sm font-semibold text-charcoal mt-1">—</p>
+                            </div>
+                            <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                <span class="text-[10px] font-bold text-warmgray uppercase">Hydration</span>
+                                <p id="res-hydration" class="text-sm font-semibold text-sage mt-1">—</p>
+                            </div>
+                            <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                <span class="text-[10px] font-bold text-warmgray uppercase">Radiance Score</span>
+                                <p id="res-radiance" class="text-sm font-semibold text-blush-dark mt-1">—</p>
+                            </div>
+                        </div>
+
+                        <!-- Suggested Skincare Routine -->
+                        <div class="space-y-3">
+                            <h4 class="font-serif font-bold text-base text-charcoal flex items-center gap-2">
+                                <i class="fa-solid fa-droplet text-sage text-sm"></i> Recommended Skincare Routine
+                            </h4>
+                            <div id="recommended-skincare-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                    <span class="font-bold text-sage">1. Hydration Cleanser</span>
+                                    <p class="text-warmgray mt-1">Gentle pH-balanced formula for daily morning and night cleansing.</p>
+                                </div>
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                                    <span class="font-bold text-sage">2. Niacinamide & HA Serum</span>
+                                    <p class="text-warmgray mt-1">Improves texture and balances moisture barrier without clogging pores.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Makeup Matching Recommendations -->
+                        <div class="space-y-3">
+                            <h4 class="font-serif font-bold text-base text-charcoal flex items-center gap-2">
+                                <i class="fa-solid fa-palette text-blush-dark text-sm"></i> Matched Makeup Palette
+                            </h4>
+                            <div id="makeup-matches-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60 text-center space-y-1">
+                                    <span class="text-[10px] text-warmgray font-bold">FOUNDATION</span>
+                                    <div id="swatch-foundation" class="w-8 h-8 rounded-full mx-auto border border-sand" style="background-color: #E6C5A8;"></div>
+                                    <p id="label-foundation" class="font-medium text-charcoal text-[11px]">Warm Nude</p>
+                                </div>
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60 text-center space-y-1">
+                                    <span class="text-[10px] text-warmgray font-bold">BLUSH</span>
+                                    <div id="swatch-blush" class="w-8 h-8 rounded-full mx-auto border border-sand" style="background-color: #E29587;"></div>
+                                    <p id="label-blush" class="font-medium text-charcoal text-[11px]">Soft Peach</p>
+                                </div>
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60 text-center space-y-1">
+                                    <span class="text-[10px] text-warmgray font-bold">LIP TONE</span>
+                                    <div id="swatch-lip" class="w-8 h-8 rounded-full mx-auto border border-sand" style="background-color: #B26A60;"></div>
+                                    <p id="label-lip" class="font-medium text-charcoal text-[11px]">Rosewood</p>
+                                </div>
+                                <div class="bg-alabaster p-3 rounded-xl border border-sand/60 text-center space-y-1">
+                                    <span class="text-[10px] text-warmgray font-bold">EYESHADOW</span>
+                                    <div id="swatch-eye" class="w-8 h-8 rounded-full mx-auto border border-sand" style="background-color: #9E8576;"></div>
+                                    <p id="label-eye" class="font-medium text-charcoal text-[11px]">Muted Taupe</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skincare & Makeup Vanity Shelf Organizer -->
+            <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sand pb-4">
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-charcoal">Vanity Shelf & Daily Organizer</h3>
+                        <p class="text-xs text-warmgray">Track your daily skincare products and morning/evening beauty steps.</p>
+                    </div>
+
+                    <!-- Add New Product Form -->
+                    <form id="skincare-form" onsubmit="addSkincareProduct(event)" class="flex flex-wrap gap-2">
+                        <input type="text" id="product-name" placeholder="Product Name (e.g. SPF 50 Glow)" required class="bg-alabaster border border-sand px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sage">
+                        <select id="product-step" class="bg-alabaster border border-sand px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sage font-medium">
+                            <option value="AM Routine">AM Routine</option>
+                            <option value="PM Routine">PM Routine</option>
+                            <option value="Makeup">Makeup Essential</option>
+                        </select>
+                        <button type="submit" class="bg-charcoal text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-sage transition-all">
+                            Add to Shelf
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Product Shelf Display -->
+                <div id="skincare-shelf-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: LIFE & STYLE TIPS PLAYBOOK -->
+        <section id="section-tips" class="tab-section hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-sand">
+                <div>
+                    <span class="text-xs font-semibold text-sage uppercase tracking-wider">Mindful Living</span>
+                    <h2 class="text-3xl font-serif font-bold text-charcoal">Life & Style Playbook</h2>
+                </div>
+                <p class="text-sm text-warmgray max-w-md">Simple rules and daily habits to keep your closet minimal, your outfits cohesive, and your days organized.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Tip Card 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-sage-light flex items-center justify-center text-sage text-lg font-serif italic">01</div>
+                    <h3 class="text-lg font-serif font-bold text-charcoal">The 333 Capsule Rule</h3>
+                    <p class="text-xs text-warmgray leading-relaxed">Select 3 tops, 3 bottoms, and 3 pairs of shoes. By mixing and matching these 9 items, you can create up to 27 distinct outfits—enough to cover almost a full month of stylish variations without closet clutter.</p>
+                    <div class="inline-block px-3 py-1 bg-alabaster rounded-full text-[11px] font-semibold text-sage border border-sand">Style Strategy</div>
+                </div>
+
+                <!-- Tip Card 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-sage-light flex items-center justify-center text-sage text-lg font-serif italic">02</div>
+                    <h3 class="text-lg font-serif font-bold text-charcoal">Color Sandwich Technique</h3>
+                    <p class="text-xs text-warmgray leading-relaxed">Match the color tone of your top (or headwear) with your shoes, sandwiching a contrasting or neutral bottom piece in between. This visually balances your silhouette instantly with zero effort.</p>
+                    <div class="inline-block px-3 py-1 bg-alabaster rounded-full text-[11px] font-semibold text-sage border border-sand">Color Harmony</div>
+                </div>
+
+                <!-- Tip Card 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-sage-light flex items-center justify-center text-sage text-lg font-serif italic">03</div>
+                    <h3 class="text-lg font-serif font-bold text-charcoal">Skin Care Sandwiching</h3>
+                    <p class="text-xs text-warmgray leading-relaxed">Apply lighter hydrating serums on damp skin before sealing them with lightweight moisturizer and SPF. Double cleansing in the evening removes sunscreen residue and ensures skin clarity.</p>
+                    <div class="inline-block px-3 py-1 bg-alabaster rounded-full text-[11px] font-semibold text-sage border border-sand">Skincare Routine</div>
+                </div>
+
+                <!-- Tip Card 4 -->
+                <div class="bg-white p-6 rounded-2xl border border-sand shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-sage-light flex items-center justify-center text-sage text-lg font-serif italic">04</div>
+                    <h3 class="text-lg font-serif font-bold text-charcoal">The 2-Minute Micro Reset</h3>
+                    <p class="text-xs text-warmgray leading-relaxed">If a home or organizational task takes less than two minutes (putting shoes away, hanging up a coat, making the bed), do it immediately. This prevents small tasks from building into mental overwhelm.</p>
+                    <div class="inline-block px-3 py-1 bg-alabaster rounded-full text-[11px] font-semibold text-sage border border-sand">Organization</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-sand py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center text-xs text-warmgray gap-2">
+            <p>© 2026 AURA Studio. Designed for simple, aesthetic living.</p>
+            <p class="flex items-center gap-1"><i class="fa-solid fa-sparkles text-sage"></i> Organized & GitHub Pages Ready</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Sample Wardrobe Items
+        const DEFAULT_CLOTHES = [
+            { id: '1', name: 'Cream Cotton Shirt', category: 'tops', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><path d="M60 50 L100 80 L140 50 L170 80 L150 170 L50 170 L30 80 Z" fill="%23EAE5D9" stroke="%238C857B" stroke-width="3"/></svg>' },
+            { id: '2', name: 'Sage Linen Overshirt', category: 'tops', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><path d="M60 50 L100 80 L140 50 L170 80 L150 170 L50 170 L30 80 Z" fill="%238A9A86" stroke="%232A2827" stroke-width="3"/></svg>' },
+            { id: '3', name: 'Tailored Beige Trousers', category: 'bottoms', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><path d="M60 40 L140 40 L150 180 L110 180 L100 90 L90 180 L50 180 Z" fill="%23EAE5D9" stroke="%238C857B" stroke-width="3"/></svg>' },
+            { id: '4', name: 'Minimalist Charcoal Denim', category: 'bottoms', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><path d="M60 40 L140 40 L150 180 L110 180 L100 90 L90 180 L50 180 Z" fill="%232A2827" stroke="%232A2827" stroke-width="3"/></svg>' },
+            { id: '5', name: 'Leather White Loafers', category: 'shoes', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><path d="M40 120 C40 100 80 90 140 90 L160 120 L160 150 L40 150 Z" fill="%23FFFFFF" stroke="%232A2827" stroke-width="3"/></svg>' },
+            { id: '6', name: 'Structured Canvas Tote', category: 'accessories', image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23FAF9F6"/><rect x="50" y="80" width="100" height="90" fill="%23EAE5D9" stroke="%232A2827" stroke-width="3"/><path d="M80 80 C80 50 120 50 120 80" fill="none" stroke="%232A2827" stroke-width="3"/></svg>' }
+        ];
+
+        // Sample Skincare Products
+        const DEFAULT_SKINCARE = [
+            { id: '1', name: 'Hydrating Gentle Gel Cleanser', step: 'AM Routine', completed: true },
+            { id: '2', name: 'Hyaluronic Acid Moisture Boost', step: 'AM Routine', completed: true },
+            { id: '3', name: 'Invisible Sheer Sunscreen SPF 50', step: 'AM Routine', completed: false },
+            { id: '4', name: 'Niacinamide Barrier Serum', step: 'PM Routine', completed: false },
+            { id: '5', name: 'Luminous Peach Cream Blush', step: 'Makeup', completed: false }
+        ];
+
+        // State Storage
+        let tasks = JSON.parse(localStorage.getItem('aura_tasks')) || [
+            { id: 1, text: 'Perform morning skincare routine', category: 'Skincare', completed: false },
+            { id: 2, text: 'Plan tomorrow\'s capsule outfit', category: 'Style', completed: false },
+            { id: 3, text: 'Perform 2-minute bedroom reset', category: 'Routine', completed: true }
+        ];
+
+        let closet = JSON.parse(localStorage.getItem('aura_closet')) || DEFAULT_CLOTHES;
+        let savedOutfits = JSON.parse(localStorage.getItem('aura_outfits')) || [];
+        let skincareProducts = JSON.parse(localStorage.getItem('aura_skincare')) || DEFAULT_SKINCARE;
+
+        let currentCompressedPhoto = null;
+        let videoStream = null;
+        let capturedFaceImage = null;
+        let builderIndexes = { tops: 0, bottoms: 0, shoes: 0, accessories: 0 };
+        let currentTaskFilter = 'all';
+        let currentClosetFilter = 'all';
+
+        // App Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            renderCloset();
+            updateBuilderDisplays();
+            renderSavedOutfits();
+            renderSkincareShelf();
+        });
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-charcoal', 'text-white');
+                btn.classList.add('text-charcoal', 'hover:bg-white/60');
+            });
+
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-charcoal', 'text-white');
+                activeNav.classList.remove('text-charcoal', 'hover:bg-white/60');
+            }
+
+            // Stop camera stream if navigating away from skincare tab
+            if (tabId !== 'skincare' && videoStream) {
+                stopCamera();
+            }
+        }
+
+        /* --- SECTION 1: TO-DO LIST LOGIC --- */
+        function renderTasks() {
+            const listEl = document.getElementById('todo-list');
+            listEl.innerHTML = '';
+
+            const filtered = tasks.filter(t => currentTaskFilter === 'all' || t.category === currentTaskFilter);
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-8 text-warmgray text-xs">No tasks found in this category.</div>`;
+            } else {
+                filtered.forEach(task => {
+                    const taskCard = document.createElement('div');
+                    taskCard.className = `bg-white p-4 rounded-xl border border-sand/80 flex items-center justify-between gap-3 shadow-sm transition-all ${task.completed ? 'opacity-60 bg-alabaster' : ''}`;
+                    taskCard.innerHTML = `
+                        <div class="flex items-center gap-3 flex-1">
+                            <button onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md border flex items-center justify-center transition-all ${task.completed ? 'bg-sage border-sage text-white' : 'border-sand hover:border-sage'}">
+                                ${task.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                            </button>
+                            <span class="text-xs md:text-sm text-charcoal font-medium ${task.completed ? 'line-through text-warmgray' : ''}">${escapeHtml(task.text)}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-sand/40 text-warmgray">${task.category}</span>
+                            <button onclick="deleteTask(${task.id})" class="text-warmgray hover:text-red-500 text-xs px-2 py-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    `;
+                    listEl.appendChild(taskCard);
+                });
+            }
+
+            const completedCount = tasks.filter(t => t.completed).length;
+            const percent = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+
+            localStorage.setItem('aura_tasks', JSON.stringify(tasks));
+        }
+
+        function addTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('task-input');
+            const category = document.getElementById('task-category').value;
+            if (!input.value.trim()) return;
+
+            tasks.unshift({
+                id: Date.now(),
+                text: input.value.trim(),
+                category: category,
+                completed: false
+            });
+
+            input.value = '';
+            renderTasks();
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            renderTasks();
+        }
+
+        function filterTasks(cat) {
+            currentTaskFilter = cat;
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                if (btn.dataset.category === cat) {
+                    btn.className = 'task-filter-btn px-3 py-1 rounded-full bg-charcoal text-white';
+                } else {
+                    btn.className = 'task-filter-btn px-3 py-1 rounded-full bg-sand/50 text-charcoal hover:bg-sand';
+                }
+            });
+            renderTasks();
+        }
+
+        /* --- SECTION 2: DIGITAL CLOSET LOGIC --- */
+        function handlePhotoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const label = document.getElementById('file-label');
+            label.innerText = file.name.length > 18 ? file.name.substring(0, 15) + '...' : file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxDim = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+                    } else {
+                        if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    currentCompressedPhoto = canvas.toDataURL('image/jpeg', 0.75);
+                    document.getElementById('photo-preview').src = currentCompressedPhoto;
+                    document.getElementById('photo-preview-container').classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addClothingItem() {
+            const titleInput = document.getElementById('clothing-title');
+            const catInput = document.getElementById('clothing-category');
+
+            if (!titleInput.value.trim() || !currentCompressedPhoto) {
+                alert('Please enter an item name and upload/take a photo.');
+                return;
+            }
+
+            const newItem = {
+                id: Date.now().toString(),
+                name: titleInput.value.trim(),
+                category: catInput.value,
+                image: currentCompressedPhoto
+            };
+
+            closet.unshift(newItem);
+            localStorage.setItem('aura_closet', JSON.stringify(closet));
+
+            titleInput.value = '';
+            document.getElementById('clothing-photo').value = '';
+            document.getElementById('file-label').innerText = 'Take or Choose Photo';
+            document.getElementById('photo-preview-container').classList.add('hidden');
+            currentCompressedPhoto = null;
+
+            renderCloset();
+            updateBuilderDisplays();
+        }
+
+        function renderCloset() {
+            const grid = document.getElementById('closet-grid');
+            grid.innerHTML = '';
+
+            const filtered = closet.filter(c => currentClosetFilter === 'all' || c.category === currentClosetFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-warmgray text-xs">No clothing items in this category.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-sand/80 overflow-hidden shadow-sm flex flex-col group relative';
+                card.innerHTML = `
+                    <div class="h-36 bg-alabaster flex items-center justify-center overflow-hidden border-b border-sand/50">
+                        <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300">
+                    </div>
+                    <div class="p-3 flex justify-between items-start gap-2">
+                        <div>
+                            <span class="text-[9px] font-bold uppercase text-sage tracking-wider">${item.category}</span>
+                            <h4 class="text-xs font-semibold text-charcoal truncate max-w-[110px]">${escapeHtml(item.name)}</h4>
+                        </div>
+                        <button onclick="deleteClosetItem('${item.id}')" class="text-warmgray hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function deleteClosetItem(id) {
+            closet = closet.filter(item => item.id !== id);
+            localStorage.setItem('aura_closet', JSON.stringify(closet));
+            renderCloset();
+            updateBuilderDisplays();
+        }
+
+        function filterCloset(cat) {
+            currentClosetFilter = cat;
+            document.querySelectorAll('.closet-filter-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'closet-filter-btn px-4 py-1.5 rounded-full bg-charcoal text-white';
+                } else {
+                    btn.className = 'closet-filter-btn px-4 py-1.5 rounded-full bg-sand/40 text-charcoal hover:bg-sand';
+                }
+            });
+            renderCloset();
+        }
+
+        /* --- SECTION 3: OUTFIT STUDIO LOGIC --- */
+        function getItemsByCategory(cat) {
+            return closet.filter(i => i.category === cat);
+        }
+
+        function cycleItem(cat, direction) {
+            const items = getItemsByCategory(cat);
+            if (items.length === 0) return;
+
+            builderIndexes[cat] = (builderIndexes[cat] + direction + items.length) % items.length;
+            updateBuilderDisplays();
+        }
+
+        function randomizeOutfit() {
+            ['tops', 'bottoms', 'shoes', 'accessories'].forEach(cat => {
+                const items = getItemsByCategory(cat);
+                if (items.length > 0) {
+                    builderIndexes[cat] = Math.floor(Math.random() * items.length);
+                }
+            });
+            updateBuilderDisplays();
+        }
+
+        function updateBuilderDisplays() {
+            const categories = ['tops', 'bottoms', 'shoes', 'accessories'];
+
+            categories.forEach(cat => {
+                const items = getItemsByCategory(cat);
+                const imgEl = document.getElementById(`builder-img-${cat}`);
+                const nameEl = document.getElementById(`builder-name-${cat}`);
+                
+                const canvasImg = document.getElementById(cat === 'accessories' ? 'canvas-acc' : `canvas-${cat.slice(0, -1)}`);
+                const canvasLbl = document.getElementById(cat === 'accessories' ? 'canvas-acc-lbl' : `canvas-${cat.slice(0, -1)}-lbl`);
+
+                if (items.length === 0) {
+                    imgEl.src = '';
+                    nameEl.innerText = 'No items in closet';
+                    canvasImg.classList.add('hidden');
+                    canvasLbl.classList.remove('hidden');
+                } else {
+                    const safeIndex = builderIndexes[cat] % items.length;
+                    const item = items[safeIndex];
+
+                    imgEl.src = item.image;
+                    nameEl.innerText = item.name;
+
+                    canvasImg.src = item.image;
+                    canvasImg.classList.remove('hidden');
+                    canvasLbl.classList.add('hidden');
+                }
+            });
+        }
+
+        function saveOutfit() {
+            const title = document.getElementById('outfit-title').value.trim() || 'Untitled Look';
+            const occasion = document.getElementById('outfit-occasion').value.trim() || 'Everyday';
+            const weather = document.getElementById('outfit-weather').value.trim() || 'Any Weather';
+
+            const outfit = {
+                id: Date.now().toString(),
+                title,
+                occasion,
+                weather,
+                items: {
+                    top: getItemsByCategory('tops')[builderIndexes['tops']] || null,
+                    bottom: getItemsByCategory('bottoms')[builderIndexes['bottoms']] || null,
+                    shoes: getItemsByCategory('shoes')[builderIndexes['shoes']] || null,
+                    accessory: getItemsByCategory('accessories')[builderIndexes['accessories']] || null
+                }
+            };
+
+            savedOutfits.unshift(outfit);
+            localStorage.setItem('aura_outfits', JSON.stringify(savedOutfits));
+
+            document.getElementById('outfit-title').value = '';
+            document.getElementById('outfit-occasion').value = '';
+            document.getElementById('outfit-weather').value = '';
+
+            renderSavedOutfits();
+            alert('Outfit saved to your journal!');
+        }
+
+        function renderSavedOutfits() {
+            const grid = document.getElementById('saved-outfits-grid');
+            grid.innerHTML = '';
+
+            if (savedOutfits.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-6 text-warmgray text-xs">No saved outfits yet. Mix & match items above to create one!</div>`;
+                return;
+            }
+
+            savedOutfits.forEach(outfit => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-2xl border border-sand/80 shadow-sm space-y-3';
+                
+                const itemImgs = Object.values(outfit.items)
+                    .filter(i => i !== null)
+                    .map(i => `<img src="${i.image}" class="w-12 h-12 object-cover rounded-lg border border-sand">`)
+                    .join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-serif font-bold text-sm text-charcoal">${escapeHtml(outfit.title)}</h4>
+                            <span class="text-[10px] text-warmgray">${escapeHtml(outfit.occasion)} • ${escapeHtml(outfit.weather)}</span>
+                        </div>
+                        <button onclick="deleteSavedOutfit('${outfit.id}')" class="text-warmgray hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="flex gap-2 bg-alabaster p-2 rounded-xl border border-sand/60 overflow-x-auto">
+                        ${itemImgs || '<span class="text-[10px] text-warmgray">No images</span>'}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function deleteSavedOutfit(id) {
+            savedOutfits = savedOutfits.filter(o => o.id !== id);
+            localStorage.setItem('aura_outfits', JSON.stringify(savedOutfits));
+            renderSavedOutfits();
+        }
+
+        /* --- SECTION 4: SKIN & MAKEUP SCANNER + ORGANIZER LOGIC --- */
+        async function startCamera() {
+            const video = document.getElementById('webcam-stream');
+            const previewImg = document.getElementById('scanned-image-preview');
+            const placeholder = document.getElementById('scanner-placeholder');
+            const analyzeBtn = document.getElementById('btn-analyze');
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = videoStream;
+                video.classList.remove('hidden');
+                previewImg.classList.add('hidden');
+                placeholder.classList.add('hidden');
+                analyzeBtn.disabled = false;
+            } catch (err) {
+                alert('Unable to access camera. Please allow camera permissions or upload a face photo instead.');
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            document.getElementById('webcam-stream').classList.add('hidden');
+        }
+
+        function handleFacePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            stopCamera();
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                capturedFaceImage = e.target.result;
+                const previewImg = document.getElementById('scanned-image-preview');
+                const placeholder = document.getElementById('scanner-placeholder');
+                const analyzeBtn = document.getElementById('btn-analyze');
+
+                previewImg.src = capturedFaceImage;
+                previewImg.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                analyzeBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function performFaceScan() {
+            const laser = document.getElementById('scan-laser');
+            const statusTag = document.getElementById('scan-status-tag');
+            laser.classList.remove('hidden');
+            statusTag.innerText = 'Scanning Skin...';
+            statusTag.className = 'text-[10px] font-bold uppercase tracking-wider px-3 py-1 bg-sage-light text-sage rounded-full animate-pulse';
+
+            // Simulate AI Skin and Undertone Detection Analysis
+            setTimeout(() => {
+                laser.classList.add('hidden');
+                statusTag.innerText = 'Scan Complete';
+                statusTag.className = 'text-[10px] font-bold uppercase tracking-wider px-3 py-1 bg-sage text-white rounded-full';
+
+                // Dynamic palette matching profiles based on scan
+                const profiles = [
+                    {
+                        tone: 'Fair-Medium',
+                        undertone: 'Warm Neutral',
+                        hydration: '84% Balanced',
+                        radiance: '92 / 100',
+                        routine: [
+                            { title: '1. Vitamin C Radiance Serum', desc: 'Protects skin barrier and promotes natural glow in morning.' },
+                            { title: '2. Lightweight Hyaluronic Cream', desc: 'Provides non-greasy hydration all day.' }
+                        ],
+                        makeup: {
+                            found: { color: '#E8CBB3', label: 'Warm Nude 02' },
+                            blush: { color: '#E49B8B', label: 'Soft Peach' },
+                            lip: { color: '#C86D61', label: 'Spiced Rose' },
+                            eye: { color: '#A08678', label: 'Warm Bronze' }
+                        }
+                    },
+                    {
+                        tone: 'Olive-Golden',
+                        undertone: 'Warm Golden',
+                        hydration: '78% Good',
+                        radiance: '89 / 100',
+                        routine: [
+                            { title: '1. Gentle BHA Clarity Cleanser', desc: 'Smoothes texture and minimizes pore appearance.' },
+                            { title: '2. Peptide & Ceramides Lotion', desc: 'Restores skin resilience and prevents moisture loss.' }
+                        ],
+                        makeup: {
+                            found: { color: '#D4A373', label: 'Golden Honey' },
+                            blush: { color: '#D97706', label: 'Terracotta Glow' },
+                            lip: { color: '#991B1B', label: 'Deep Berry' },
+                            eye: { color: '#78350F', label: 'Golden Cocoa' }
+                        }
+                    },
+                    {
+                        tone: 'Deep Warm',
+                        undertone: 'Rich Rich Bronze',
+                        hydration: '90% Radiant',
+                        radiance: '95 / 100',
+                        routine: [
+                            { title: '1. Niacinamide Hydration Mist', desc: 'Locks in moisture and even skin tone texture.' },
+                            { title: '2. Botanical Facial Oil', desc: 'Deeply nourishes for a dewy, glowing finish.' }
+                        ],
+                        makeup: {
+                            found: { color: '#8C5230', label: 'Rich Espresso' },
+                            blush: { color: '#BE123C', label: 'Rich Plum' },
+                            lip: { color: '#881337', label: 'Deep Crimson' },
+                            eye: { color: '#451A03', label: 'Shimmer Bronze' }
+                        }
+                    }
+                ];
+
+                const matched = profiles[Math.floor(Math.random() * profiles.length)];
+
+                // Update UI Profile
+                document.getElementById('res-skintone').innerText = matched.tone;
+                document.getElementById('res-undertone').innerText = matched.undertone;
+                document.getElementById('res-hydration').innerText = matched.hydration;
+                document.getElementById('res-radiance').innerText = matched.radiance;
+
+                // Render Skincare Recommendations
+                const skincareEl = document.getElementById('recommended-skincare-list');
+                skincareEl.innerHTML = matched.routine.map(r => `
+                    <div class="bg-alabaster p-3 rounded-xl border border-sand/60">
+                        <span class="font-bold text-sage">${r.title}</span>
+                        <p class="text-warmgray mt-1">${r.desc}</p>
+                    </div>
+                `).join('');
+
+                // Render Makeup Swatches
+                document.getElementById('swatch-foundation').style.backgroundColor = matched.makeup.found.color;
+                document.getElementById('label-foundation').innerText = matched.makeup.found.label;
+
+                document.getElementById('swatch-blush').style.backgroundColor = matched.makeup.blush.color;
+                document.getElementById('label-blush').innerText = matched.makeup.blush.label;
+
+                document.getElementById('swatch-lip').style.backgroundColor = matched.makeup.lip.color;
+                document.getElementById('label-lip').innerText = matched.makeup.lip.label;
+
+                document.getElementById('swatch-eye').style.backgroundColor = matched.makeup.eye.color;
+                document.getElementById('label-eye').innerText = matched.makeup.eye.label;
+
+            }, 2000);
+        }
+
+        /* --- SKINCARE VANITY SHELF ORGANIZER LOGIC --- */
+        function renderSkincareShelf() {
+            const grid = document.getElementById('skincare-shelf-grid');
+            grid.innerHTML = '';
+
+            const steps = ['AM Routine', 'PM Routine', 'Makeup'];
+
+            steps.forEach(stepName => {
+                const stepItems = skincareProducts.filter(p => p.step === stepName);
+                const col = document.createElement('div');
+                col.className = 'bg-alabaster p-4 rounded-xl border border-sand/80 space-y-3';
+                
+                const itemRows = stepItems.length ? stepItems.map(p => `
+                    <div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-sand/60 text-xs">
+                        <div class="flex items-center gap-2 flex-1">
+                            <button onclick="toggleSkincareStep('${p.id}')" class="w-4 h-4 rounded border flex items-center justify-center ${p.completed ? 'bg-sage border-sage text-white' : 'border-sand'}">
+                                ${p.completed ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                            </button>
+                            <span class="${p.completed ? 'line-through text-warmgray' : 'text-charcoal font-medium'}">${escapeHtml(p.name)}</span>
+                        </div>
+                        <button onclick="deleteSkincareProduct('${p.id}')" class="text-warmgray hover:text-red-500 text-xs pl-2"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `).join('') : '<p class="text-[11px] text-warmgray italic">No products added yet.</p>';
+
+                col.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-sand pb-2">
+                        <h4 class="font-serif font-bold text-sm text-charcoal">${stepName}</h4>
+                        <span class="text-[10px] font-bold text-sage bg-white px-2 py-0.5 rounded-full border border-sand/60">${stepItems.filter(i=>i.completed).length}/${stepItems.length}</span>
+                    </div>
+                    <div class="space-y-2">${itemRows}</div>
+                `;
+                grid.appendChild(col);
+            });
+
+            localStorage.setItem('aura_skincare', JSON.stringify(skincareProducts));
+        }
+
+        function addSkincareProduct(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('product-name');
+            const stepInput = document.getElementById('product-step');
+
+            if (!nameInput.value.trim()) return;
+
+            skincareProducts.unshift({
+                id: Date.now().toString(),
+                name: nameInput.value.trim(),
+                step: stepInput.value,
+                completed: false
+            });
+
+            nameInput.value = '';
+            renderSkincareShelf();
+        }
+
+        function toggleSkincareStep(id) {
+            skincareProducts = skincareProducts.map(p => p.id === id ? { ...p, completed: !p.completed } : p);
+            renderSkincareShelf();
+        }
+
+        function deleteSkincareProduct(id) {
+            skincareProducts = skincareProducts.filter(p => p.id !== id);
+            renderSkincareShelf();
+        }
+
+        // Utility to escape HTML
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+    </script>
+</body>
+</html>
